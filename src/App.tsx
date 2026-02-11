@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Download, Layout as LayoutIcon, Moon, Save, Sun, Upload } from 'lucide-react'
+import { Download, FileText, Moon, Save, Sun, Upload } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useReactToPrint } from 'react-to-print'
 import './App.css'
@@ -9,16 +9,33 @@ import type { CVData } from './types'
 import { defaultCVData, translations } from './types'
 
 function App() {
-  const [data, setData] = useState<CVData>(defaultCVData)
+  const [data, setData] = useState<CVData>(() => {
+    const saved = localStorage.getItem('cleancv_data')
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch (e) {
+        return defaultCVData
+      }
+    }
+    return defaultCVData
+  })
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('cleancv_theme') as 'light' | 'dark') || 'dark'
+  })
   const componentRef = useRef<HTMLDivElement>(null)
 
   const t = translations[data.lang]
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('cleancv_theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    localStorage.setItem('cleancv_data', JSON.stringify(data))
+  }, [data])
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
@@ -64,8 +81,27 @@ function App() {
     >
       <header className="app-header glass no-print">
         <div className="logo-section">
-          <motion.div whileHover={{ scale: 1.1 }} className="icon-circle">
-            <LayoutIcon size={24} color="white" />
+          <motion.div 
+            whileHover={{ scale: 1.05, rotate: 5 }} 
+            className="icon-circle" 
+            style={{ 
+              background: 'linear-gradient(135deg, var(--primary), #4f46e5)', 
+              padding: '10px', 
+              borderRadius: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 16px rgba(99, 102, 241, 0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M7 7H17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M7 12H17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M7 17H13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M17 17V17.01" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </motion.div>
           <div className="logo-text">
             <h1>{t.appTitle}</h1>
@@ -74,6 +110,21 @@ function App() {
         </div>
 
         <div className="header-actions">
+          <div className="mode-toggle">
+            <button 
+              className={`mode-btn ${!data.coverLetter.show ? 'active' : ''}`}
+              onClick={() => updateData({ coverLetter: { ...data.coverLetter, show: false } })}
+            >
+              CV
+            </button>
+            <button 
+              className={`mode-btn ${data.coverLetter.show ? 'active' : ''}`}
+              onClick={() => updateData({ coverLetter: { ...data.coverLetter, show: true } })}
+            >
+              <FileText size={14} /> <span className="hide-mobile">{t.coverLetter}</span>
+            </button>
+          </div>
+
           <div className="lang-selector">
             <select 
               value={data.lang} 
@@ -110,7 +161,7 @@ function App() {
         
         <div className={`preview-side ${activeTab === 'preview' ? 'active' : ''}`}>
           <div className="preview-wrap">
-            <div className="preview-container glass">
+            <div className="preview-container">
               <CVPreview ref={componentRef} data={data} />
             </div>
           </div>
@@ -130,7 +181,11 @@ function App() {
         .logo-text h1 { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
         .logo-text p { font-size: 0.55rem; opacity: 0.6; text-transform: uppercase; font-weight: 700; margin-top: 4px; }
         
-        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        .mode-toggle { display: flex; background: rgba(0,0,0,0.1); padding: 4px; border-radius: 10px; border: 1px solid var(--glass-border); }
+        .mode-btn { padding: 6px 14px; font-size: 0.75rem; font-weight: 700; border-radius: 7px; color: var(--text-main); display: flex; align-items: center; gap: 6px; background: transparent; opacity: 0.7; }
+        .mode-btn.active { background: var(--primary); color: white; opacity: 1; }
+
         .lang-selector select { 
           height: 32px; padding: 0 8px; font-size: 0.75rem; font-weight: 700; border-radius: 8px; 
           background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: var(--text-main); 
@@ -150,8 +205,7 @@ function App() {
           font-size: 0.75rem; font-weight: 800; border-radius: 8px; background: var(--primary); 
           color: white; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
         }
-        .download-btn:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 8px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.5); }
-        
+
         .app-main { display: flex; flex: 1; overflow: hidden; padding: 1rem; gap: 1rem; }
         .editor-side { width: 450px; overflow-y: auto; padding-right: 5px; }
         .preview-side { flex: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 1rem; }
@@ -164,18 +218,18 @@ function App() {
 
         @media (max-width: 1024px) { 
           .hide-mobile { display: none; } 
-          .app-header { height: 60px; padding: 0 1rem; margin: 0.5rem; border-radius: 12px; }
+          .app-header { height: auto; min-height: 60px; padding: 0.75rem 1rem; margin: 0.5rem; border-radius: 12px; flex-wrap: wrap; }
           .logo-section { gap: 8px; }
           .icon-circle { padding: 6px; }
           .icon-circle svg { width: 18px; height: 18px; }
           .logo-text h1 { font-size: 1rem; }
           
           .editor-side { width: 100%; display: none; } 
-          .preview-side { display: none; } 
+          .preview-side { display: none; padding: 0.5rem; width: 100%; overflow-x: hidden; } 
           .editor-side.active, .preview-side.active { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; } 
           .mobile-nav { display: flex; } 
           
-          .preview-wrap { padding: 0; transform: scale(0.95); transform-origin: top center; margin-bottom: 80px; }
+          .preview-wrap { padding: 0; transform: scale(0.45); transform-origin: top center; margin-bottom: -450px; }
         }
       `}</style>
     </div>
