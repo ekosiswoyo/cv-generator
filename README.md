@@ -1,73 +1,70 @@
-# React + TypeScript + Vite
+# CleanCV
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**CleanCV** is a privacy-first, ATS-friendly CV generator built for job seekers who care about structure, readability, and full ownership of their personal data.
 
-Currently, two official plugins are available:
+The app runs entirely in the browser — no accounts, no database, no tracking.  
+Create, customize, export, and re-import your CV anytime, without uploading your data anywhere.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🧾 **ATS-Friendly Resume Layout**
+  - Single-column structure
+  - Clean headings and spacing
+  - Safe fonts for Applicant Tracking Systems
 
-## Expanding the ESLint configuration
+- 🎨 **Customizable Templates**
+  - Multiple ATS-safe templates
+  - Accent color selection
+  - Font customization (header & body)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🌍 **Multi-Language Support**
+  - English & Indonesian section headers
+  - Suitable for local and international applications
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- 👀 **Live Preview**
+  - Real-time CV preview while editing
+  - Responsive layout for desktop and mobile
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- 📦 **Export & Import (No Database)**
+  - Export CV to PDF
+  - Export raw data to JSON / custom bundle
+  - Re-import anytime to update your CV in the future
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- 🔒 **Privacy-First by Design**
+  - No backend storage
+  - No user accounts
+  - All data stays on your device
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🧠 Why CleanCV?
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Most CV builders require accounts and store sensitive personal data on their servers.  
+CleanCV takes a different approach:
+
+> Your CV belongs to you — not a platform.
+
+Everything is processed locally in your browser, making CleanCV ideal for users who value privacy, simplicity, and long-term control.
+
+---
+
+## 🖥️ Tech Stack
+
+- **Frontend**: React / Next.js
+- **Styling**: Tailwind CSS
+- **State Management**: Client-side only
+- **Export**: PDF / JSON (client-side)
+- **Storage**: Browser memory / local storage (optional)
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# install dependencies
+npm install
+
+# run development server
+npm run dev
